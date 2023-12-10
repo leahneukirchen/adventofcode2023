@@ -3,21 +3,18 @@
         :std/misc/number
         :std/iter
         :std/sugar
-        :std/pregexp)
+        :std/pregexp
+        "./advent.ss")
 (export main)
 
-(def vector-ref-set! vector-set!)
-
 (def (parse file)
-  (call-with-input-file file
-    (lambda (input)
-      (list->vector
-       (for/collect (line (in-input-lines input))
-         (match (pregexp-split "[:|] +" line)
-           ([_ winning numbers]
-            (length (lset-intersection equal?
-                                       (pregexp-split " +" winning)
-                                       (pregexp-split " +" numbers))))))))))
+  (list->vector
+   (for/collect (line (in-file-lines file))
+     (match (pregexp-split "[:|] +" line)
+       ([_ winning numbers]
+        (length (lset-intersection equal?
+                                   (parse-list winning)
+                                   (parse-list numbers))))))))
            
 (def (part1 wins)
   (def (score n)
@@ -28,9 +25,9 @@
 
 (def (part2 wins)
   (let (counts (make-vector (vector-length wins) 1))
-    (for ((i (in-range 0 (vector-length wins))))
-      (for ((j (in-range (+ i 1) (+ i 1 (vector-ref wins i)))))
-        (increment! (vector-ref counts j) (vector-ref counts i))))
+    (for* ((i (in-range 0 (vector-length wins)))
+           (j (in-range (+ i 1) (+ i 1 (vector-ref wins i)))))
+      (increment! (vector-ref counts j) (vector-ref counts i)))
     (vector-fold + 0 counts)))
 
 (def (main . args)

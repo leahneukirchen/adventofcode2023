@@ -1,11 +1,8 @@
 (import :std/sugar
         :std/iter
-        :std/pregexp)
+        :std/pregexp
+        "./advent.ss")
 (export main)
-
-;; I prefer the operator outside the body
-(defrule (for/foldl (acc op init) bind body ...)
-  (for/fold (acc init) bind (op (begin body ...) acc)))
 
 (def (digit->number str)
   (- (char->integer (string-ref str 0))
@@ -37,11 +34,9 @@
     (digit->number (hash-ref english-digits match match))))
 
 (def (solve part: part)
-  (call-with-input-file "day01"
-    (lambda (input)
-      (for/foldl (sum + 0) (line (in-input-lines input))
-        (+ (* 10 (find-digit line part: part pos: 'first))
-           (find-digit line part: part pos: 'last))))))
+  (for/foldl (+ 0) (line (in-file-lines "day01"))
+    (+ (* 10 (find-digit line part: part pos: 'first))
+       (find-digit line part: part pos: 'last))))
 
 (def (main . args)
   (displayln (solve part: 1))           ; 54644

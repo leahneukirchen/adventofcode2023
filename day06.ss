@@ -1,7 +1,8 @@
 (import :std/srfi/1
         :std/misc/ports
         :std/iter
-        :std/pregexp)
+        :std/pregexp
+        "./advent.ss")
 (export main)
 
 (def (int r)
@@ -14,8 +15,8 @@
        (if (exact? (sqrt disc)) 1 0))))
 
 (def data
-  (for/collect (line (read-file-lines "day06"))
-    (map string->number (cdr (pregexp-split " +" line)))))
+  (for/collect (line (in-file-lines "day06"))
+    (cdr (parse-list line))))
 
 (def (part1)
   (apply * (map races (first data) (second data))))

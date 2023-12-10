@@ -2,7 +2,8 @@
         :std/iter
         :std/misc/ports
         :std/pregexp
-        :std/sugar)
+        :std/sugar
+        "./advent.ss")
 (export main)
 
 (def (scan op xs)
@@ -15,11 +16,8 @@
       (- (last xs) (extrapolate diff)))))
 
 (def (solve trans)
-  (call-with-input-file "day09"
-    (lambda (input)
-      (for/fold (sum 0) (line (in-input-lines input))
-        (+ sum (extrapolate
-                (trans (map string->number (pregexp-split " +" line)))))))))
+  (for/foldl (+ 0) (line (in-file-lines "day09"))
+     (extrapolate (trans (parse-list line)))))
 
 (def (main . args)
   (displayln (solve identity))          ; 1789635132
